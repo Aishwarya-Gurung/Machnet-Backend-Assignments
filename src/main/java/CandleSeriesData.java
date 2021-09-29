@@ -16,6 +16,7 @@ public class CandleSeriesData {
         return time;
     }
     public String getSymbol(){
+
         return symbol;
     }
     public double getPrice(){

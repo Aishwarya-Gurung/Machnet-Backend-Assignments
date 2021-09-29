@@ -7,44 +7,44 @@ import java.util.stream.Collectors;
 
 public class GenerateCandleSeries {
     LocalDateTime currentTime= LocalDateTime.parse("2021-09-21T10:00:00.255");
-    List<CandleSeriesData> listOfCandelSeriesData= new ArrayList<>();
+    List<CandleSeriesData> listOfCandleSeriesData= new ArrayList<>();
     List<CandleSeriesData> listOfFilteredData= new ArrayList<>();
     List<CandleDTO> listOfCandleDTO=new ArrayList<>();
 
-    public static String symbolGeneration(){
-        String[] symbols= {"USD","POUND","NPR"};
+    public static String symbolGenerator(){
+        String[] symbols= {"USD","POUND"};
         Random random=new Random();
         int symbol=random.nextInt(symbols.length);
         return symbols[symbol];
     }
 
-    public static double priceGeneration(double price){
+    public static double priceGenerator(double price){
         Random random= new Random();
-        double[] pricePercentList= {-(random.nextInt(11)),(random.nextInt(11))};
-        int index=random.nextInt(pricePercentList.length);
-        price=price+((price*pricePercentList[index])/100);
+        double[] priceChange= {-(random.nextInt(5)),(random.nextInt(5))};
+        int index=random.nextInt(priceChange.length);
+        price=price+((price*priceChange[index])/100);
         return price;
     }
 
-    public List<CandleSeriesData> seriesDataGenerator(){
+    public List<CandleSeriesData> candleSeriesDataGenerator(){
         Random random=new Random();
-        double price =random.nextInt( 500) + 500 ;
-        while(listOfCandelSeriesData.size()<100800) {
+        double price =random.nextInt( 700) + 200 ;
+        while(listOfCandleSeriesData.size()<90000) {
             if (currentTime.getHour() >= 10 && currentTime.getHour() < 15) {
-                listOfCandelSeriesData.add(new CandleSeriesData(currentTime, symbolGeneration(), priceGeneration(price)));
+                listOfCandleSeriesData.add(new CandleSeriesData(currentTime, symbolGenerator(), priceGenerator(price)));
             }
             currentTime = currentTime.plusSeconds(1);
         }
-        return listOfCandelSeriesData;
+        return listOfCandleSeriesData;
     }
 
     public List<CandleDTO> getCandles(String symbol, LocalDateTime startDate, LocalDateTime endDate, int granularity) {
 
-        listOfFilteredData=listOfCandelSeriesData.stream()
-                .filter(e->e.getTime().isAfter(startDate)&&e.getTime().isBefore(endDate))
+        listOfFilteredData=listOfCandleSeriesData.stream()
+                .filter(n->n.getTime().isAfter(startDate)&&n.getTime().isBefore(endDate))
                 .collect(Collectors.toList());
 
-        int begin=0;
+        int skip=0;
         int candelLength=listOfFilteredData.size()/granularity;
         List<CandleSeriesData> singleCandel=null;
         List<CandleSeriesData> singleCandelFiltered = null;
@@ -52,7 +52,7 @@ public class GenerateCandleSeries {
 
         for(int i=0;i<candelLength;i++){
 
-            singleCandel = listOfFilteredData.stream().skip(begin)
+            singleCandel = listOfFilteredData.stream().skip(skip)
                     .limit(granularity).collect(Collectors.toList());
 
             singleCandelFiltered=singleCandel.stream().filter(n->n.getSymbol()==symbol).collect(Collectors.toList());
@@ -66,7 +66,7 @@ public class GenerateCandleSeries {
             double sumPrice = singleCandelPrice.stream().reduce(0d, (acc, element) -> acc + element);
             double openingPrice;
 
-            if(begin==0){
+            if(skip==0){
                 openingPrice =singleCandelPrice.get(0);
                 closingPrice =singleCandelPrice.get(singleCandelPrice.size()-1);
             }
@@ -76,7 +76,7 @@ public class GenerateCandleSeries {
             }
 
             listOfCandleDTO.add(new CandleDTO(singleCandelTime.get(0), lowPrice, highPrice, openingPrice, closingPrice, sumPrice));
-            begin+=granularity;
+            skip+=granularity;
         }
 
         return listOfCandleDTO ;
@@ -85,16 +85,16 @@ public class GenerateCandleSeries {
     public static void main(String[] args) {
         GenerateCandleSeries  GenerateCandleSeries=new GenerateCandleSeries();
 
-        List<CandleSeriesData> candleSeriesData= GenerateCandleSeries.seriesDataGenerator();
+         GenerateCandleSeries.candleSeriesDataGenerator();
 
-        List<CandleDTO> candleDTOList= GenerateCandleSeries.getCandles("NPR",LocalDateTime
+        List<CandleDTO> candleDTOList= GenerateCandleSeries.getCandles("USD",LocalDateTime
                 .parse("2021-09-21T10:00:00.00"),LocalDateTime
                 .parse("2021-09-21T14:59:59.256"),30);
 
         int count=1;
 
         for(int i=0;i<candleDTOList.size();i++){
-            System.out.println("Candel"+count+" Time: "+candleDTOList.get(i).getTime()+"  Highest Price:"+candleDTOList.get(i).getHigh()+"  Lowest Price:"+candleDTOList.get(i).getLow()+"  Opening Price:"+candleDTOList.get(i).getOpen()+" Closing Price:"+candleDTOList.get(i).getClose()+ " Volume: "+candleDTOList.get(i).getVolume());
+            System.out.println("Candle"+count+" Time: "+candleDTOList.get(i).getTime()+"  Highest Price:"+candleDTOList.get(i).getHigh()+"  Lowest Price:"+candleDTOList.get(i).getLow()+"  Opening Price:"+candleDTOList.get(i).getOpen()+" Closing Price:"+candleDTOList.get(i).getClose()+ " Volume: "+candleDTOList.get(i).getVolume());
             count++;
         }
     }
