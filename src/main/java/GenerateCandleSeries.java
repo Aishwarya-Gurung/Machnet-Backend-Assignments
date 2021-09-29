@@ -6,7 +6,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 public class GenerateCandleSeries {
-    LocalDateTime currentTime= LocalDateTime.parse("2021-09-21T10:00:00.255");
+    LocalDateTime currentTime= LocalDateTime.parse("2021-09-22T10:00:00.255");
     List<CandleSeriesData> listOfCandleSeriesData= new ArrayList<>();
     List<CandleSeriesData> listOfFilteredData= new ArrayList<>();
     List<CandleDTO> listOfCandleDTO=new ArrayList<>();
@@ -88,8 +88,8 @@ public class GenerateCandleSeries {
          GenerateCandleSeries.candleSeriesDataGenerator();
 
         List<CandleDTO> candleDTOList= GenerateCandleSeries.getCandles("USD",LocalDateTime
-                .parse("2021-09-21T10:00:00.00"),LocalDateTime
-                .parse("2021-09-21T14:59:59.256"),30);
+                .parse("2021-09-22T10:00:00.00"),LocalDateTime
+                .parse("2021-09-22T14:59:59.256"),30);
 
         int count=1;
 
